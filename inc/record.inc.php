@@ -1669,7 +1669,7 @@ function search_zone_and_record($parameters, $permission_view, $sort_zones_by, $
                 z.domain_id,
                 z.owner,
                 u.id as user_id,
-                u.fullname,
+                GROUP_CONCAT(u.fullname SEPARATOR ", ") AS fullname,
                 record_count.count_records
             FROM
                 domains
@@ -1680,7 +1680,7 @@ function search_zone_and_record($parameters, $permission_view, $sort_zones_by, $
                 (domains.name LIKE ' . $db->quote($search_string, 'text') .
             ($parameters['reverse'] ? ' OR domains.name LIKE ' . $reverse_search_string : '') . ') ' .
             ($permission_view == 'own' ? ' AND z.owner = ' . $db->quote($_SESSION['userid'], 'integer') : '') .
-            ' ORDER BY ' . $sort_zones_by;
+            ' GROUP BY 1 ORDER BY ' . $sort_zones_by;
 
         $zonesResponse = $db->query($zonesQuery);
         if (PEAR::isError($zonesResponse)) {
