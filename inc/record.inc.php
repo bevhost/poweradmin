@@ -1243,7 +1243,7 @@ function get_zones($perm, $userid = 0, $letterstart = 'all', $rowstart = 0, $row
     }
 
     if ($sortby == 'owner') {
-        $sortby = 'users.username';
+        $sortby = 'users.fullname';
     } elseif ($sortby != 'count_records') {
         $sortby = 'domains.' . $sortby;
     }
@@ -1669,7 +1669,7 @@ function search_zone_and_record($parameters, $permission_view, $sort_zones_by, $
                 z.domain_id,
                 z.owner,
                 u.id as user_id,
-                GROUP_CONCAT(u.fullname SEPARATOR ", ") AS fullname,
+                u.fullname,
                 record_count.count_records
             FROM
                 domains
@@ -1680,7 +1680,7 @@ function search_zone_and_record($parameters, $permission_view, $sort_zones_by, $
                 (domains.name LIKE ' . $db->quote($search_string, 'text') .
             ($parameters['reverse'] ? ' OR domains.name LIKE ' . $reverse_search_string : '') . ') ' .
             ($permission_view == 'own' ? ' AND z.owner = ' . $db->quote($_SESSION['userid'], 'integer') : '') .
-            ' GROUP BY 1 ORDER BY ' . $sort_zones_by;
+            ' ORDER BY ' . $sort_zones_by;
 
         $zonesResponse = $db->query($zonesQuery);
         if (PEAR::isError($zonesResponse)) {
